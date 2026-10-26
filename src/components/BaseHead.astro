@@ -34,17 +34,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
 {type === 'article' && publishedTime && <meta property="article:published_time" content={publishedTime} />}
 <meta name="twitter:card" content="summary" />
 
-<meta name="theme-color" content="#fbf9f5" media="(prefers-color-scheme: light)" />
-<meta name="theme-color" content="#131211" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#000000" />
+<meta name="color-scheme" content="dark light" />
 
 <script is:inline>
   (() => {
+    // 深色是这套设计的本体，默认即深色；只有用户手动切过才记忆。
     try {
-      const stored = localStorage.getItem('theme');
-      const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      document.documentElement.dataset.theme = stored || (dark ? 'dark' : 'light');
+      document.documentElement.dataset.theme =
+        localStorage.getItem('theme') === 'light' ? 'light' : 'dark';
     } catch (_) {
-      document.documentElement.dataset.theme = 'light';
+      document.documentElement.dataset.theme = 'dark';
     }
   })();
 </script>

@@ -9,6 +9,7 @@ const tech = byCategory(posts, 'tech').slice(0, 4);
 const essay = byCategory(posts, 'essay').slice(0, 4);
 const tags = tagCounts(posts).slice(0, 12);
 const years = posts.length ? [...new Set(posts.map((p) => p.data.pubDate.getFullYear()))] : [];
+const latest = posts[0];
 
 const sections = [
   { key: 'tech' as const, posts: tech },
@@ -18,9 +19,20 @@ const sections = [
 
 <BaseLayout>
   <section class="wrap hero">
-    <p class="eyebrow hero__eyebrow rise">{SITE.titleEn} · 双重笔记</p>
+    <div class="hero__stage" aria-hidden="true">
+      <div class="hero__glow"></div>
+      <div class="hero__ring"></div>
+    </div>
+
+    <p class="hero__eyebrow rise">技术笔记 与 随笔</p>
     <h1 class="hero__title rise rise-2">{SITE.title}</h1>
     <p class="hero__lede rise rise-3">{SITE.description}</p>
+
+    <div class="hero__actions rise rise-4">
+      {latest && <a class="btn btn--primary" href={url(`/posts/${latest.id}/`)}>读最新一篇</a>}
+      <a class="btn" href={url('/archive')}>按时间归档</a>
+    </div>
+
     <div class="hero__meta rise rise-4">
       <span>文章 <b>{posts.length}</b> 篇</span>
       <span>标签 <b>{tags.length}</b> 个</span>
@@ -36,7 +48,7 @@ const sections = [
             <div class="section-head">
               <h2 class="section-head__title">{CATEGORIES[key].label}</h2>
               <a class="section-head__more" href={url(`/${key}`)}>
-                全部 {byCategory(posts, key).length} 篇 →
+                全部 {byCategory(posts, key).length} 篇
               </a>
             </div>
             {list.length === 0 && <p class="empty">这里还空着。</p>}
@@ -57,11 +69,11 @@ const sections = [
 
   {
     tags.length > 0 && (
-      <div class="wrap" style="margin-top: 3.5rem;">
+      <div class="wrap" style="margin-top: 4rem;">
         <div class="section-head">
           <h2 class="section-head__title">常写的主题</h2>
           <a class="section-head__more" href={url('/tags')}>
-            全部标签 →
+            全部标签
           </a>
         </div>
         <div class="tag-cloud">

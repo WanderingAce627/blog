@@ -3,21 +3,66 @@ import { SITE } from '../consts';
 import { url } from '../lib/url';
 
 const year = new Date().getFullYear();
+
+const columns = [
+  {
+    title: '栏目',
+    links: [
+      { label: '技术笔记', href: '/tech' },
+      { label: '随笔', href: '/essay' },
+    ],
+  },
+  {
+    title: '索引',
+    links: [
+      { label: '标签', href: '/tags' },
+      { label: '归档', href: '/archive' },
+      { label: '关于', href: '/about' },
+    ],
+  },
+];
 ---
 
 <footer class="site-footer">
-  <div class="wrap site-footer__inner">
-    <p>
-      © {SITE.since === year ? year : `${SITE.since}–${year}`} {SITE.author} · {SITE.footerNote}
-    </p>
-    <div class="site-footer__links">
+  <div class="wrap">
+    <div class="site-footer__inner">
+      <div>
+        <div class="site-footer__brand">
+          <span class="brand__mark" aria-hidden="true"></span>
+          {SITE.title}
+        </div>
+        <p class="site-footer__note">
+          © {SITE.since === year ? year : `${SITE.since}–${year}`} {SITE.author} · {SITE.footerNote}
+        </p>
+      </div>
+
       {
-        SITE.socials.map((s) => (
-          <a href={s.href.startsWith('/') ? url(s.href) : s.href} target={s.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer">
-            {s.label}
-          </a>
+        columns.map((col) => (
+          <div class="site-footer__col">
+            <b>{col.title}</b>
+            {col.links.map((link) => (
+              <a href={url(link.href)}>{link.label}</a>
+            ))}
+          </div>
         ))
       }
+
+      <div class="site-footer__col">
+        <b>订阅</b>
+        {
+          SITE.socials.map((s) => (
+            <a
+              href={s.href.startsWith('/') ? url(s.href) : s.href}
+              target={s.href.startsWith('http') ? '_blank' : undefined}
+              rel="noopener noreferrer"
+            >
+              {s.label}
+            </a>
+          ))
+        }
+      </div>
     </div>
+
+    <div class="site-footer__mark" aria-hidden="true">{SITE.title}</div>
   </div>
 </footer>
