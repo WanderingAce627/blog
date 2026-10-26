@@ -1,12 +1,43 @@
 # 拾穗 · 个人博客
 
-基于 [Astro](https://astro.build) 的静态博客，部署在 GitHub Pages。写文章只需要新建一个 Markdown 文件。
+基于 [Astro](https://astro.build) 的静态博客，部署在 GitHub Pages。写文章可以不碰本地环境，直接在网页后台写。
 
 线上地址：<https://wanderingace627.github.io/blog/>
+写作后台：<https://wanderingace627.github.io/blog/admin/>
+仓库：<https://github.com/WanderingAce627/blog>
 
 ---
 
-## 写一篇新文章
+## 在网页上写文章（推荐）
+
+打开 **<https://wanderingace627.github.io/blog/admin/>**，是一个纯前端的可视化后台（Sveltia CMS）。
+它直接通过 GitHub API 读写这个仓库，没有任何服务器，也就不用担心服务挂掉。
+
+### 第一次使用：生成一个访问令牌
+
+只需要做一次。
+
+1. 打开 <https://github.com/settings/personal-access-tokens/new> 新建 **Fine-grained token**
+2. Token name 随便填（比如 `blog-cms`），Expiration 选 90 天或自定义
+3. **Repository access** 选 `Only select repositories` → 勾选 `blog`
+4. **Permissions → Repository permissions → Contents** 改成 `Read and write`
+   （Metadata 会自动变成 Read-only，是正常的）
+5. 点 Generate token，复制出来的那串字符（只显示一次）
+6. 回到后台页面，点 **Sign In Using Access Token**，把令牌粘进去
+
+令牌存在你自己浏览器的 localStorage 里，不会上传到任何地方。过期后重新生成一个粘进去就行。
+
+### 写文章和插图
+
+- 左侧「文章」→「新建文章」
+- 图片有四种进法：**直接拖进正文**、**截图后 Ctrl+V 粘贴**、点工具栏的图片按钮、或从媒体库选
+- 图片会存到仓库的 `public/uploads/` 下，记得顺手改个有意义的文件名
+- 正文下面的「附件」可以挂 PDF、压缩包，会在文章末尾生成下载区
+- 「存为草稿」勾上就只在本地 `npm run dev` 能看到，不会发布
+
+保存后会以你的名义在 `main` 分支产生一次提交，GitHub Actions 自动构建发布，1～2 分钟后线上更新。
+
+## 手动写文章
 
 在 `src/content/blog/` 下新建一个 `.md` 文件，文件名就是 URL（`my-post.md` → `/posts/my-post/`）。
 
@@ -17,9 +48,12 @@ description: 一句话摘要，会显示在列表页和搜索结果里
 pubDate: 2026-10-26
 category: tech
 tags: [标签一, 标签二]
+attachments:
+  - name: 附件名.pdf
+    url: /blog/uploads/附件名.pdf
 ---
 
-正文从这里开始，用 Markdown 写。
+正文从这里开始，用 Markdown 写。图片直接写 `/blog/uploads/xxx.png`。
 ```
 
 ### frontmatter 字段
@@ -33,8 +67,7 @@ tags: [标签一, 标签二]
 | `tags` | 否 | 标签数组，会自动生成标签页 |
 | `draft` | 否 | `true` 时只在本地可见，不会发布 |
 | `updatedDate` | 否 | 修订日期，填了会在文章页显示「修订于」 |
-
-写完提交推送。想完全在 GitHub 网页上写作、不碰本地环境，先按文末「方式二」开启 Actions 自动部署；否则在本地跑一次 `npm run deploy` 发布。
+| `attachments` | 否 | 附件列表，每项是 `{ name, url }`，会在文末生成下载区 |
 
 ## 本地预览
 
@@ -57,14 +90,16 @@ npm run preview  # 预览构建结果
 │   ├── content.config.ts      # frontmatter 校验规则
 │   ├── layouts/
 │   │   ├── BaseLayout.astro   # 页面外壳
-│   │   └── PostLayout.astro   # 文章页（含目录、上下篇）
+│   │   └── PostLayout.astro   # 文章页（目录、附件、上下篇）
 │   ├── components/
 │   ├── lib/
 │   │   ├── posts.ts           # 排序、分组、阅读时长
 │   │   └── url.ts             # 站内链接统一加 base 前缀
 │   ├── pages/                 # 路由，文件名即 URL
 │   └── styles/global.css      # 设计令牌与全部样式
-├── public/                    # 原样复制的静态资源（favicon 等）
+├── public/
+│   ├── admin/                 # 写作后台（index.html + config.yml + CMS 本体）
+│   └── uploads/               # 后台上传的图片和附件
 ├── astro.config.mjs           # site / base / markdown 配置
 └── .github/workflows/deploy.yml
 ```
@@ -75,41 +110,25 @@ npm run preview  # 预览构建结果
 
 **改配色** → `src/styles/global.css` 顶部的 CSS 变量，浅色和深色各一组。
 
-**换到根域名**（`用户名.github.io`）→ 仓库改名为 `用户名.github.io`，然后把 `astro.config.mjs` 里的 `base: '/blog'` 删掉。其他代码不用动，因为所有链接都走 `url()` 函数。
+**改后台字段** → `public/admin/config.yml`。加了新字段记得同步改 `src/content.config.ts` 里的校验规则，否则构建会报错。
 
-**绑定自己的域名** → 在 `public/` 下新建 `CNAME` 文件，内容写你的域名；同时把 `site` 改成 `https://你的域名`，并删掉 `base`。
+**换到根域名**（`用户名.github.io`）→ 仓库改名为 `用户名.github.io`，把 `astro.config.mjs` 里的 `base: '/blog'` 删掉，把 `public/admin/config.yml` 里的 `public_folder` 改成 `/uploads`，再批量替换已有文章里的图片路径：
 
-**加评论** → 推荐 [Giscus](https://giscus.app)，它把评论存在 GitHub Discussions 里，不需要后端。
+```bash
+grep -rl '/blog/uploads' src/content/blog | xargs sed -i 's#/blog/uploads#/uploads#g'
+```
+
+**绑定自己的域名** → `public/` 下新建 `CNAME` 文件写域名，`site` 改成 `https://你的域名`，删掉 `base`，按上一条同样处理图片路径。
+
+**加评论** → 推荐 [Giscus](https://giscus.app)，评论存在 GitHub Discussions 里，不需要后端。
 
 ## 部署
 
-本站当前使用 **gh-pages 分支发布**：GitHub Pages 的 Source 设为 `gh-pages` 分支根目录。
+`main` 分支每次推送都会触发 `.github/workflows/deploy.yml`：安装依赖 → 构建 → 上传产物 → 发布到 GitHub Pages。
 
-### 方式一：本地一条命令发布（现在可用）
+在 **Actions** 标签页能看到每次构建的日志。构建失败时线上保留上一个成功版本，不会挂掉。
 
-```bash
-npm run deploy
-```
+### 备用方式：gh-pages 分支
 
-它会自动构建，把 `dist/` 推到 `gh-pages` 分支，约 1 分钟后线上更新。
-
-### 方式二：推送即发布（推荐，需一次性开启）
-
-仓库里已经准备好了 `.github/workflows/deploy.yml`，但因为 GitHub 的 OAuth token 默认没有 `workflow` 权限，它暂时还没能提交上去。开启方式二选一：
-
-**A. 命令行授权后推送**
-
-```bash
-gh auth refresh -h github.com -s workflow
-git add .github && git commit -m "ci: 开启 Actions 自动部署" && git push
-```
-
-**B. 网页上手动添加**
-
-打开 <https://github.com/WanderingAce627/blog/new/main/.github/workflows>，文件名填 `deploy.yml`，把本地 `.github/workflows/deploy.yml` 的内容粘进去提交。
-
-然后到仓库 **Settings → Pages → Build and deployment → Source** 改成 **GitHub Actions**。
-
-之后每次 `git push` 到 `main` 都会自动构建发布 —— 连本地环境都不需要，直接在 GitHub 网页上新建 `.md` 文件提交就行。
-
-> 两种方式不要同时开：切到 GitHub Actions 后，`gh-pages` 分支的内容就不再影响线上了。
+如果哪天 Actions 出问题，本地跑 `npm run deploy` 也能发布 —— 它会构建并把 `dist/` 强推到 `gh-pages` 分支。
+但注意 Pages 的 Source 必须相应地在 **Settings → Pages** 里切到 `gh-pages` 分支，两种方式只能用一个。

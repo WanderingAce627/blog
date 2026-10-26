@@ -69,6 +69,24 @@ const showToc = toc.length >= 2;
       }
     </div>
 
+    {
+      d.attachments.length > 0 && (
+        <aside class="attachments" aria-label="附件">
+          <p class="attachments__title">附件</p>
+          <ul class="attachments__list">
+            {d.attachments.map((file) => (
+              <li>
+                {/* file.url 由后台写入，已包含 /blog 前缀，直接用 */}
+                <a href={file.url} target="_blank" rel="noopener">
+                  {file.name || file.url.split('/').pop()}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      )
+    }
+
     <nav class="post-nav" aria-label="文章导航">
       {
         prev && (

@@ -14,6 +14,10 @@ const blog = defineCollection({
     tags: z.array(z.string()).default([]),
     /** true 时只在本地 npm run dev 可见，不会发布 */
     draft: z.boolean().default(false),
+    /** 附件：PDF、压缩包等，会在文章末尾列出下载链接 */
+    attachments: z
+      .array(z.object({ name: z.string(), url: z.string() }))
+      .default([]),
   }),
 });
 

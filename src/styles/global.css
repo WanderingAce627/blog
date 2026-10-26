@@ -752,6 +752,53 @@ hr {
   font-size: 0.76rem;
 }
 
+/* 附件 */
+.attachments {
+  margin-top: 3rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--bg-tint);
+  max-width: var(--measure);
+}
+
+.attachments__title {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.6rem;
+}
+
+.attachments__list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.attachments__list a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  color: var(--ink-2);
+  transition: color 0.18s var(--ease);
+}
+
+.attachments__list a::before {
+  content: '↓';
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+
+.attachments__list a:hover {
+  color: var(--accent);
+}
+
 /* 上一篇 / 下一篇 */
 .post-nav {
   display: grid;
