@@ -1,0 +1,102 @@
+# ▸ 写作后台配置。改完刷新 /admin 页面即可生效，不用重新构建。
+#   媒体文件存进仓库的 public/uploads/，构建时原样复制到站点。
+#   public_folder 要带上站点路径前缀（当前是 /blog），
+#   因为 Markdown 里的图片地址不会被自动加前缀。换域名时记得同步修改。
+
+backend:
+  name: github
+  repo: WanderingAce627/blog
+  branch: main
+
+media_folder: public/uploads
+public_folder: /blog/uploads
+
+site_url: https://wanderingace627.github.io/blog/
+display_url: https://wanderingace627.github.io/blog/
+logo_url: https://wanderingace627.github.io/blog/favicon.svg
+
+locale: zh-CN
+
+collections:
+  - name: posts
+    label: 文章
+    label_singular: 文章
+    folder: src/content/blog
+    extension: md
+    format: frontmatter
+    create: true
+    identifier_field: title
+    slug: '{{slug}}'
+    summary: '{{title}}'
+    sortable_fields: [pubDate, title]
+    view_filters:
+      - label: 技术笔记
+        field: category
+        pattern: tech
+      - label: 随笔
+        field: category
+        pattern: essay
+      - label: 草稿
+        field: draft
+        pattern: true
+    fields:
+      - { name: title, label: 标题, widget: string }
+
+      - name: description
+        label: 摘要
+        widget: text
+        required: false
+        hint: 显示在列表页和搜索结果里，一两句话就够
+
+      - name: pubDate
+        label: 发布日期
+        widget: datetime
+        date_format: YYYY-MM-DD
+        time_format: false
+        format: YYYY-MM-DD
+
+      - name: updatedDate
+        label: 修订日期
+        widget: datetime
+        required: false
+        date_format: YYYY-MM-DD
+        time_format: false
+        format: YYYY-MM-DD
+        hint: 改过旧文章时填一下，文章页会显示「修订于」
+
+      - name: category
+        label: 栏目
+        widget: select
+        options:
+          - { label: 技术笔记, value: tech }
+          - { label: 随笔, value: essay }
+        default: tech
+
+      - name: tags
+        label: 标签
+        widget: list
+        required: false
+        default: []
+        hint: 输入一个按回车，会自动生成标签页
+
+      - name: draft
+        label: 存为草稿（不发布）
+        widget: boolean
+        default: false
+        required: false
+
+      - name: attachments
+        label: 附件
+        widget: list
+        required: false
+        default: []
+        summary: '{{fields.name}}'
+        hint: PDF、压缩包之类。会在文章末尾列出下载链接
+        fields:
+          - { name: name, label: 显示名称, widget: string }
+          - { name: url, label: 文件, widget: file }
+
+      - name: body
+        label: 正文
+        widget: markdown
+        hint: 图片可以直接拖进来，或截图后 Ctrl+V 粘贴

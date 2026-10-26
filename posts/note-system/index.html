@@ -1,0 +1,44 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v7.4.2"><title>我的笔记系统：三层结构 · 拾穗</title><meta name="description" content="试过十几个工具之后，我最后留下的结构其实只有三层，而且和软件无关。"><meta name="author" content="Harry"><link rel="canonical" href="https://wanderingace627.github.io/blog/posts/note-system/"><link rel="icon" type="image/svg+xml" href="/blog/favicon.svg"><link rel="alternate" type="application/rss+xml" title="拾穗 · RSS" href="https://wanderingace627.github.io/blog/rss.xml"><meta property="og:type" content="article"><meta property="og:title" content="我的笔记系统：三层结构 · 拾穗"><meta property="og:description" content="试过十几个工具之后，我最后留下的结构其实只有三层，而且和软件无关。"><meta property="og:url" content="https://wanderingace627.github.io/blog/posts/note-system/"><meta property="og:site_name" content="拾穗"><meta property="og:locale" content="zh_CN"><meta property="article:published_time" content="2026-10-20T00:00:00.000Z"><meta name="twitter:card" content="summary"><meta name="theme-color" content="#000000"><meta name="color-scheme" content="dark light"><script>
+  (() => {
+    // 深色是这套设计的本体，默认即深色；只有用户手动切过才记忆。
+    try {
+      document.documentElement.dataset.theme =
+        localStorage.getItem('theme') === 'light' ? 'light' : 'dark';
+    } catch (_) {
+      document.documentElement.dataset.theme = 'dark';
+    }
+  })();
+</script><link rel="stylesheet" href="/blog/_astro/BaseLayout.DxSkoq0x.css"></head><body><a class="skip-link" href="#main">跳到正文</a><header class="site-header"><div class="wrap site-header__inner"><a href="/blog/" class="brand" aria-label="拾穗 首页"><span class="brand__mark" aria-hidden="true"></span><span class="brand__name">拾穗</span><span class="brand__sub">GLEANINGS</span></a><nav class="nav" aria-label="主导航"><a href="/blog/tech/" class="nav__link">技术</a><a href="/blog/essay/" class="nav__link">随笔</a><a href="/blog/tags/" class="nav__link">标签</a><a href="/blog/archive/" class="nav__link">归档</a><a href="/blog/about/" class="nav__link">关于</a></nav><button class="theme-toggle" type="button" id="theme-toggle" aria-label="切换深色 / 浅色" title="切换深色 / 浅色"><svg class="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"></path></svg><svg class="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.5 1.5m11.2 11.2 1.5 1.5M19.1 4.9l-1.5 1.5M6.4 17.6l-1.5 1.5"></path></svg></button><script type="module">document.getElementById(`theme-toggle`)?.addEventListener(`click`,()=>{let e=document.documentElement,t=e.dataset.theme===`dark`?`light`:`dark`;e.dataset.theme=t;try{localStorage.setItem(`theme`,t)}catch{}});</script></div></header><main id="main"><article><div class="wrap"><header class="post-header rise"><div class="post-header__meta"><span class="post-header__cat">技术笔记</span><time datetime="2026-10-20T00:00:00.000Z">2026 年 10 月 20 日</time><span>约 2 分钟</span></div><h1 class="post-header__title">我的笔记系统：三层结构</h1><p class="post-header__desc">试过十几个工具之后，我最后留下的结构其实只有三层，而且和软件无关。</p><div class="tags"><a class="tag" href="/blog/tags/%E7%AC%94%E8%AE%B0/">#笔记</a><a class="tag" href="/blog/tags/%E6%96%B9%E6%B3%95%E8%AE%BA/">#方法论</a><a class="tag" href="/blog/tags/%E6%95%88%E7%8E%87/">#效率</a></div></header><div class="post-body"><div class="prose"><p>我在笔记工具上花的时间，可能比做正经事还多。Notion、Obsidian、Logseq、飞书、各种双链方案……每一次迁移都是一次「重新开始」的幻觉。</p>
+<p>真正让它稳定下来的，不是换工具，是换结构。</p>
+<h2 id="三层各管各的">三层，各管各的</h2>
+<h3 id="第一层随手记当天">第一层：随手记（当天）</h3>
+<p>所有突然冒出来的东西都先进这里：一个想法、一段引用、一个报错、一个待查的名词。</p>
+<p>关键约束是<strong>不分类</strong>。分类意味着决策，决策意味着拖延。这一层唯一的要求是：写下它的时间。</p>
+<p>我用的就是一个按日期命名的文件，<code>2026-10-20.md</code>，从头往下加。</p>
+<h3 id="第二层主题笔记长期">第二层：主题笔记（长期）</h3>
+<p>当一个东西在随手记里出现第三次，它才升级到主题笔记。</p>
+<p>这是整个系统里最重要的一条规则。<strong>重复出现是唯一可靠的信号</strong>——它说明这件事真的在我的生活里反复发生，而不是一时的好奇。</p>
+<p>主题笔记是「一件事的当前全部认知」。它不是流水账，每写一次就重写一次，把新的理解合并进去：</p>
+<pre class="astro-code astro-code-themes github-light github-dark" style="background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word;" tabindex="0" data-language="markdown"><code><span class="line"><span style="color:#005CC5;--shiki-light-font-weight:bold;--shiki-dark:#79B8FF;--shiki-dark-font-weight:bold">## 缓存失效的几种策略</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E36209;--shiki-dark:#FFAB70">-</span><span style="color:#24292E;--shiki-dark:#E1E4E8"> Cache aside：读时回填，写时删缓存。最简单，也最容易出现脏读窗口。</span></span>
+<span class="line"><span style="color:#E36209;--shiki-dark:#FFAB70">-</span><span style="color:#24292E;--shiki-dark:#E1E4E8"> Write through：写时同步写缓存和库。一致性好，写性能差。</span></span>
+<span class="line"><span style="color:#E36209;--shiki-dark:#FFAB70">-</span><span style="color:#24292E;--shiki-dark:#E1E4E8"> Write behind：写只写缓存，异步刷库。性能最好，可能丢数据。</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#E1E4E8">  → 2026-09 补充：只在「丢一点数据无所谓」的场景可用，比如浏览量。</span></span></code></pre>
+<p>注意最后那行带日期的补充。<strong>主题笔记要能看出观点的演化</strong>，否则它就退化成了资料汇编。</p>
+<h3 id="第三层成品对外">第三层：成品（对外）</h3>
+<p>文章、方案文档、分享稿。这一层是从第二层里长出来的。</p>
+<p>不是每篇主题笔记都值得变成成品，但反过来——没有主题笔记支撑的成品，写出来通常是空的。</p>
+<h2 id="为什么不用双链">为什么不用双链</h2>
+<p>我用过一整年的双向链接。最后放弃的原因很具体：</p>
+<p>双链让「建立关联」的成本降到接近零，于是<strong>所有的关联都会被建立</strong>。一个记了 500 个节点的库，每个节点连出七八条边，最后那张图没有任何信息量。</p>
+<p>我需要的不是「哪些东西相关」，我需要的是「哪些东西<strong>重要到值得我专门为它写一页</strong>」。前者双链能给，后者只能靠重复出现筛。</p>
+<h2 id="工具其实不重要">工具其实不重要</h2>
+<p>三层结构用纯文本文件就能实现：</p>
+<pre class="astro-code astro-code-themes github-light github-dark" style="background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word;" tabindex="0" data-language="plaintext"><code><span class="line"><span>notes/</span></span>
+<span class="line"><span>├── daily/2026-10-20.md</span></span>
+<span class="line"><span>├── topics/缓存策略.md</span></span>
+<span class="line"><span>└── output/静态博客搭建.md</span></span></code></pre>
+<p>都是 Markdown，都在 Git 里，任何编辑器都能打开。以后换什么工具，<code>cp -r</code> 就搬完了。</p>
+<p>真正让我效率变高的不是某个编辑器，是那条「出现三次才升级」的规则。它替我挡掉了 90% 的无效整理。</p>
+</div><aside class="toc" aria-label="本文目录"><p class="toc__title">目录</p><ul><li><a class="depth-2" href="#三层各管各的">三层，各管各的</a></li><li><a class="depth-3" href="#第一层随手记当天">第一层：随手记（当天）</a></li><li><a class="depth-3" href="#第二层主题笔记长期">第二层：主题笔记（长期）</a></li><li><a class="depth-3" href="#第三层成品对外">第三层：成品（对外）</a></li><li><a class="depth-2" href="#为什么不用双链">为什么不用双链</a></li><li><a class="depth-2" href="#工具其实不重要">工具其实不重要</a></li></ul></aside></div><nav class="post-nav" aria-label="文章导航"><a class="post-nav__item" href="/blog/posts/why-blog-again/"><div class="post-nav__label">← 上一篇</div><div class="post-nav__title">为什么我又开始写博客了</div></a><a class="post-nav__item post-nav__item--next" href="/blog/posts/astro-github-pages/"><div class="post-nav__label">下一篇 →</div><div class="post-nav__title">用 Astro 和 GitHub Pages 搭一个不用管服务器的博客</div></a></nav></div></article></main><footer class="site-footer"><div class="wrap"><div class="site-footer__inner"><div><div class="site-footer__brand"><span class="brand__mark" aria-hidden="true"></span>拾穗</div><p class="site-footer__note">© 2026 Harry · 用 Astro 构建，托管在 GitHub Pages。</p></div><div class="site-footer__col"><b>栏目</b><a href="/blog/tech/">技术笔记</a><a href="/blog/essay/">随笔</a></div><div class="site-footer__col"><b>索引</b><a href="/blog/tags/">标签</a><a href="/blog/archive/">归档</a><a href="/blog/about/">关于</a></div><div class="site-footer__col"><b>订阅</b><a href="https://github.com/WanderingAce627" target="_blank" rel="noopener noreferrer">GitHub</a><a href="/blog/rss.xml" rel="noopener noreferrer">RSS</a></div></div><div class="site-footer__mark" aria-hidden="true">拾穗</div></div></footer></body></html>

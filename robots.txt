@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /blog/admin/
+
+Sitemap: https://wanderingace627.github.io/blog/sitemap-index.xml

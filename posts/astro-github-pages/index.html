@@ -1,0 +1,134 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v7.4.2"><title>用 Astro 和 GitHub Pages 搭一个不用管服务器的博客 · 拾穗</title><meta name="description" content="从空仓库到自动发布，一个纯静态博客的完整搭建过程，以及为什么我选了这条路。"><meta name="author" content="Harry"><link rel="canonical" href="https://wanderingace627.github.io/blog/posts/astro-github-pages/"><link rel="icon" type="image/svg+xml" href="/blog/favicon.svg"><link rel="alternate" type="application/rss+xml" title="拾穗 · RSS" href="https://wanderingace627.github.io/blog/rss.xml"><meta property="og:type" content="article"><meta property="og:title" content="用 Astro 和 GitHub Pages 搭一个不用管服务器的博客 · 拾穗"><meta property="og:description" content="从空仓库到自动发布，一个纯静态博客的完整搭建过程，以及为什么我选了这条路。"><meta property="og:url" content="https://wanderingace627.github.io/blog/posts/astro-github-pages/"><meta property="og:site_name" content="拾穗"><meta property="og:locale" content="zh_CN"><meta property="article:published_time" content="2026-10-26T00:00:00.000Z"><meta name="twitter:card" content="summary"><meta name="theme-color" content="#000000"><meta name="color-scheme" content="dark light"><script>
+  (() => {
+    // 深色是这套设计的本体，默认即深色；只有用户手动切过才记忆。
+    try {
+      document.documentElement.dataset.theme =
+        localStorage.getItem('theme') === 'light' ? 'light' : 'dark';
+    } catch (_) {
+      document.documentElement.dataset.theme = 'dark';
+    }
+  })();
+</script><link rel="stylesheet" href="/blog/_astro/BaseLayout.DxSkoq0x.css"></head><body><a class="skip-link" href="#main">跳到正文</a><header class="site-header"><div class="wrap site-header__inner"><a href="/blog/" class="brand" aria-label="拾穗 首页"><span class="brand__mark" aria-hidden="true"></span><span class="brand__name">拾穗</span><span class="brand__sub">GLEANINGS</span></a><nav class="nav" aria-label="主导航"><a href="/blog/tech/" class="nav__link">技术</a><a href="/blog/essay/" class="nav__link">随笔</a><a href="/blog/tags/" class="nav__link">标签</a><a href="/blog/archive/" class="nav__link">归档</a><a href="/blog/about/" class="nav__link">关于</a></nav><button class="theme-toggle" type="button" id="theme-toggle" aria-label="切换深色 / 浅色" title="切换深色 / 浅色"><svg class="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"></path></svg><svg class="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.5 1.5m11.2 11.2 1.5 1.5M19.1 4.9l-1.5 1.5M6.4 17.6l-1.5 1.5"></path></svg></button><script type="module">document.getElementById(`theme-toggle`)?.addEventListener(`click`,()=>{let e=document.documentElement,t=e.dataset.theme===`dark`?`light`:`dark`;e.dataset.theme=t;try{localStorage.setItem(`theme`,t)}catch{}});</script></div></header><main id="main"><article><div class="wrap"><header class="post-header rise"><div class="post-header__meta"><span class="post-header__cat">技术笔记</span><time datetime="2026-10-26T00:00:00.000Z">2026 年 10 月 26 日</time><span>约 3 分钟</span></div><h1 class="post-header__title">用 Astro 和 GitHub Pages 搭一个不用管服务器的博客</h1><p class="post-header__desc">从空仓库到自动发布，一个纯静态博客的完整搭建过程，以及为什么我选了这条路。</p><div class="tags"><a class="tag" href="/blog/tags/Astro/">#Astro</a><a class="tag" href="/blog/tags/GitHub%20Pages/">#GitHub Pages</a><a class="tag" href="/blog/tags/%E9%9D%99%E6%80%81%E7%AB%99%E7%82%B9/">#静态站点</a></div></header><div class="post-body"><div class="prose"><p>搭这个站花了大概一个晚上。写下来，既是备忘，也给同样想动手的人省一点时间。</p>
+<h2 id="为什么是静态站">为什么是静态站</h2>
+<p>博客的本质是「一堆几乎不变的文章 + 一个列表页」。这个特征决定了它不需要数据库，不需要后端，不需要每分钟都在跑的进程。</p>
+<p>一旦接受这点，架构就变得非常简单：<strong>构建时把所有页面生成为 HTML，托管在 CDN 上</strong>。收益是实打实的：</p>
+<ul>
+<li>打开速度快，因为返回的就是静态文件，没有服务端渲染</li>
+<li>成本为零，GitHub Pages 对公开仓库免费</li>
+<li>不会挂，没有服务器要维护、续费、打补丁</li>
+<li>备份天然存在，全部内容就是仓库里的 Markdown</li>
+</ul>
+<p>代价也明确：没有评论、没有实时搜索、没有个性化推荐。对我来说这些都不重要。</p>
+<h2 id="技术选型">技术选型</h2>
+<p>主流的静态博客方案我简单比了一下：</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>构建速度</th>
+<th>上手成本</th>
+<th>生态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Astro</td>
+<td>快</td>
+<td>低</td>
+<td>现代，MDX / 组件化</td>
+</tr>
+<tr>
+<td>Hugo</td>
+<td>极快</td>
+<td>中</td>
+<td>主题多，Go 模板语法略陡</td>
+</tr>
+<tr>
+<td>Hexo</td>
+<td>中</td>
+<td>低</td>
+<td>中文社区最成熟</td>
+</tr>
+<tr>
+<td>Next.js</td>
+<td>慢</td>
+<td>高</td>
+<td>功能过剩</td>
+</tr>
+</tbody>
+</table>
+<p>最后选 Astro，理由很朴素：<strong>它默认不发送 JavaScript</strong>。一个博客不需要为了显示一篇文章给浏览器塞 200KB 的运行时。同时它又保留组件化能力，以后想加一块交互内容不用换框架。</p>
+<h2 id="三个关键配置">三个关键配置</h2>
+<h3 id="1-site-和-base">1. site 和 base</h3>
+<p>如果仓库名不是 <code>用户名.github.io</code>，站点会部署在子路径下。这时候必须告诉 Astro 自己的根路径在哪：</p>
+<pre class="astro-code astro-code-themes github-light github-dark" style="background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#D73A49;--shiki-dark:#F97583">export</span><span style="color:#D73A49;--shiki-dark:#F97583"> default</span><span style="color:#6F42C1;--shiki-dark:#B392F0"> defineConfig</span><span style="color:#24292E;--shiki-dark:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#E1E4E8">  site: </span><span style="color:#032F62;--shiki-dark:#9ECBFF">'https://用户名.github.io'</span><span style="color:#24292E;--shiki-dark:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#E1E4E8">  base: </span><span style="color:#032F62;--shiki-dark:#9ECBFF">'/blog'</span><span style="color:#24292E;--shiki-dark:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#E1E4E8">});</span></span></code></pre>
+<p>少配 <code>base</code> 的典型症状是：本地一切正常，线上 CSS 全部 404。因为样式表请求的是 <code>/assets/style.css</code>，而文件实际在 <code>/blog/assets/style.css</code>。</p>
+<h3 id="2-站内链接统一走一个函数">2. 站内链接统一走一个函数</h3>
+<p>即使配了 <code>base</code>，Astro 也<strong>不会</strong>自动改写你手写的链接。所以我把所有站内跳转都收进一个函数：</p>
+<pre class="astro-code astro-code-themes github-light github-dark" style="background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word;" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#D73A49;--shiki-dark:#F97583">const</span><span style="color:#005CC5;--shiki-dark:#79B8FF"> RAW</span><span style="color:#D73A49;--shiki-dark:#F97583"> =</span><span style="color:#D73A49;--shiki-dark:#F97583"> import</span><span style="color:#24292E;--shiki-dark:#E1E4E8">.</span><span style="color:#005CC5;--shiki-dark:#79B8FF">meta</span><span style="color:#24292E;--shiki-dark:#E1E4E8">.env.</span><span style="color:#005CC5;--shiki-dark:#79B8FF">BASE_URL</span><span style="color:#24292E;--shiki-dark:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F97583">const</span><span style="color:#005CC5;--shiki-dark:#79B8FF"> BASE</span><span style="color:#D73A49;--shiki-dark:#F97583"> =</span><span style="color:#005CC5;--shiki-dark:#79B8FF"> RAW</span><span style="color:#D73A49;--shiki-dark:#F97583"> ===</span><span style="color:#032F62;--shiki-dark:#9ECBFF"> '/'</span><span style="color:#D73A49;--shiki-dark:#F97583"> ?</span><span style="color:#032F62;--shiki-dark:#9ECBFF"> ''</span><span style="color:#D73A49;--shiki-dark:#F97583"> :</span><span style="color:#005CC5;--shiki-dark:#79B8FF"> RAW</span><span style="color:#24292E;--shiki-dark:#E1E4E8">.</span><span style="color:#6F42C1;--shiki-dark:#B392F0">replace</span><span style="color:#24292E;--shiki-dark:#E1E4E8">(</span><span style="color:#032F62;--shiki-dark:#9ECBFF">/</span><span style="color:#22863A;--shiki-light-font-weight:bold;--shiki-dark:#85E89D;--shiki-dark-font-weight:bold">\/</span><span style="color:#D73A49;--shiki-dark:#F97583">+$</span><span style="color:#032F62;--shiki-dark:#9ECBFF">/</span><span style="color:#24292E;--shiki-dark:#E1E4E8">, </span><span style="color:#032F62;--shiki-dark:#9ECBFF">''</span><span style="color:#24292E;--shiki-dark:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F97583">export</span><span style="color:#D73A49;--shiki-dark:#F97583"> function</span><span style="color:#6F42C1;--shiki-dark:#B392F0"> url</span><span style="color:#24292E;--shiki-dark:#E1E4E8">(</span><span style="color:#E36209;--shiki-dark:#FFAB70">path</span><span style="color:#D73A49;--shiki-dark:#F97583"> =</span><span style="color:#032F62;--shiki-dark:#9ECBFF"> '/'</span><span style="color:#24292E;--shiki-dark:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F97583">  return</span><span style="color:#032F62;--shiki-dark:#9ECBFF"> `${</span><span style="color:#005CC5;--shiki-dark:#79B8FF">BASE</span><span style="color:#032F62;--shiki-dark:#9ECBFF">}${</span><span style="color:#24292E;--shiki-dark:#E1E4E8">path</span><span style="color:#032F62;--shiki-dark:#9ECBFF">.</span><span style="color:#6F42C1;--shiki-dark:#B392F0">startsWith</span><span style="color:#032F62;--shiki-dark:#9ECBFF">(</span><span style="color:#032F62;--shiki-dark:#9ECBFF">'/'</span><span style="color:#032F62;--shiki-dark:#9ECBFF">) </span><span style="color:#D73A49;--shiki-dark:#F97583">?</span><span style="color:#24292E;--shiki-dark:#E1E4E8"> path</span><span style="color:#D73A49;--shiki-dark:#F97583"> :</span><span style="color:#032F62;--shiki-dark:#9ECBFF"> `/${</span><span style="color:#24292E;--shiki-dark:#E1E4E8">path</span><span style="color:#032F62;--shiki-dark:#9ECBFF">}`}`</span><span style="color:#24292E;--shiki-dark:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#E1E4E8">}</span></span></code></pre>
+<p>以后哪怕把博客从子路径搬到根域名，改配置就行，不用全站搜索替换。</p>
+<h3 id="3-内容集合而非手写-frontmatter">3. 内容集合而非手写 frontmatter</h3>
+<p>Astro 的 content collections 会在构建时校验 frontmatter。字段写错、日期格式不对，构建直接失败——而不是等到线上发现某篇文章消失。</p>
+<pre class="astro-code astro-code-themes github-light github-dark" style="background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word;" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#D73A49;--shiki-dark:#F97583">const</span><span style="color:#005CC5;--shiki-dark:#79B8FF"> blog</span><span style="color:#D73A49;--shiki-dark:#F97583"> =</span><span style="color:#6F42C1;--shiki-dark:#B392F0"> defineCollection</span><span style="color:#24292E;--shiki-dark:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#E1E4E8">  loader: </span><span style="color:#6F42C1;--shiki-dark:#B392F0">glob</span><span style="color:#24292E;--shiki-dark:#E1E4E8">({ pattern: </span><span style="color:#032F62;--shiki-dark:#9ECBFF">'**/*.md'</span><span style="color:#24292E;--shiki-dark:#E1E4E8">, base: </span><span style="color:#032F62;--shiki-dark:#9ECBFF">'./src/content/blog'</span><span style="color:#24292E;--shiki-dark:#E1E4E8"> }),</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#E1E4E8">  schema: z.</span><span style="color:#6F42C1;--shiki-dark:#B392F0">object</span><span style="color:#24292E;--shiki-dark:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#E1E4E8">    title: z.</span><span style="color:#6F42C1;--shiki-dark:#B392F0">string</span><span style="color:#24292E;--shiki-dark:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#E1E4E8">    pubDate: z.coerce.</span><span style="color:#6F42C1;--shiki-dark:#B392F0">date</span><span style="color:#24292E;--shiki-dark:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#E1E4E8">    category: z.</span><span style="color:#6F42C1;--shiki-dark:#B392F0">enum</span><span style="color:#24292E;--shiki-dark:#E1E4E8">([</span><span style="color:#032F62;--shiki-dark:#9ECBFF">'tech'</span><span style="color:#24292E;--shiki-dark:#E1E4E8">, </span><span style="color:#032F62;--shiki-dark:#9ECBFF">'essay'</span><span style="color:#24292E;--shiki-dark:#E1E4E8">]),</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#E1E4E8">    tags: z.</span><span style="color:#6F42C1;--shiki-dark:#B392F0">array</span><span style="color:#24292E;--shiki-dark:#E1E4E8">(z.</span><span style="color:#6F42C1;--shiki-dark:#B392F0">string</span><span style="color:#24292E;--shiki-dark:#E1E4E8">()).</span><span style="color:#6F42C1;--shiki-dark:#B392F0">default</span><span style="color:#24292E;--shiki-dark:#E1E4E8">([]),</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#E1E4E8">  }),</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#E1E4E8">});</span></span></code></pre>
+<p>这一步看起来麻烦，实际上是省事的：<strong>错误的反馈越早越好</strong>。</p>
+<h2 id="自动部署">自动部署</h2>
+<p>在仓库里放一个 workflow，之后每次 <code>git push</code> 都会自动构建并发布：</p>
+<pre class="astro-code astro-code-themes github-light github-dark" style="background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">name</span><span style="color:#24292E;--shiki-dark:#E1E4E8">: </span><span style="color:#032F62;--shiki-dark:#9ECBFF">Deploy</span></span>
+<span class="line"><span style="color:#005CC5;--shiki-dark:#79B8FF">on</span><span style="color:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">  push</span><span style="color:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">    branches</span><span style="color:#24292E;--shiki-dark:#E1E4E8">: [</span><span style="color:#032F62;--shiki-dark:#9ECBFF">main</span><span style="color:#24292E;--shiki-dark:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">permissions</span><span style="color:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">  contents</span><span style="color:#24292E;--shiki-dark:#E1E4E8">: </span><span style="color:#032F62;--shiki-dark:#9ECBFF">read</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">  pages</span><span style="color:#24292E;--shiki-dark:#E1E4E8">: </span><span style="color:#032F62;--shiki-dark:#9ECBFF">write</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">  id-token</span><span style="color:#24292E;--shiki-dark:#E1E4E8">: </span><span style="color:#032F62;--shiki-dark:#9ECBFF">write</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">jobs</span><span style="color:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">  build</span><span style="color:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">    runs-on</span><span style="color:#24292E;--shiki-dark:#E1E4E8">: </span><span style="color:#032F62;--shiki-dark:#9ECBFF">ubuntu-latest</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">    steps</span><span style="color:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#E1E4E8">      - </span><span style="color:#22863A;--shiki-dark:#85E89D">uses</span><span style="color:#24292E;--shiki-dark:#E1E4E8">: </span><span style="color:#032F62;--shiki-dark:#9ECBFF">actions/checkout@v4</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#E1E4E8">      - </span><span style="color:#22863A;--shiki-dark:#85E89D">uses</span><span style="color:#24292E;--shiki-dark:#E1E4E8">: </span><span style="color:#032F62;--shiki-dark:#9ECBFF">actions/setup-node@v4</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">        with</span><span style="color:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">          node-version</span><span style="color:#24292E;--shiki-dark:#E1E4E8">: </span><span style="color:#005CC5;--shiki-dark:#79B8FF">24</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">          cache</span><span style="color:#24292E;--shiki-dark:#E1E4E8">: </span><span style="color:#032F62;--shiki-dark:#9ECBFF">npm</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#E1E4E8">      - </span><span style="color:#22863A;--shiki-dark:#85E89D">run</span><span style="color:#24292E;--shiki-dark:#E1E4E8">: </span><span style="color:#032F62;--shiki-dark:#9ECBFF">npm ci</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#E1E4E8">      - </span><span style="color:#22863A;--shiki-dark:#85E89D">run</span><span style="color:#24292E;--shiki-dark:#E1E4E8">: </span><span style="color:#032F62;--shiki-dark:#9ECBFF">npm run build</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#E1E4E8">      - </span><span style="color:#22863A;--shiki-dark:#85E89D">uses</span><span style="color:#24292E;--shiki-dark:#E1E4E8">: </span><span style="color:#032F62;--shiki-dark:#9ECBFF">actions/upload-pages-artifact@v5</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">        with</span><span style="color:#24292E;--shiki-dark:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">          path</span><span style="color:#24292E;--shiki-dark:#E1E4E8">: </span><span style="color:#032F62;--shiki-dark:#9ECBFF">dist</span></span></code></pre>
+<p>注意 <code>permissions</code> 里的 <code>pages: write</code> 和 <code>id-token: write</code> 是必须的，少了会在部署步骤报权限错误。</p>
+<h2 id="写文章的姿势">写文章的姿势</h2>
+<p>这是我最满意的部分。整个流程是：</p>
+<ol>
+<li>在 <code>src/content/blog/</code> 下新建一个 <code>.md</code> 文件</li>
+<li>写 frontmatter 和正文</li>
+<li>提交、推送</li>
+</ol>
+<p>就这样。不用开本地环境，在 GitHub 网页上也能直接写——因为构建发生在云端，不在我电脑上。</p>
+<pre class="astro-code astro-code-themes github-light github-dark" style="background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#6F42C1;--shiki-dark:#B392F0">---</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">title</span><span style="color:#24292E;--shiki-dark:#E1E4E8">: </span><span style="color:#032F62;--shiki-dark:#9ECBFF">文章标题</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">description</span><span style="color:#24292E;--shiki-dark:#E1E4E8">: </span><span style="color:#032F62;--shiki-dark:#9ECBFF">一句话摘要，会显示在列表页和搜索结果里</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">pubDate</span><span style="color:#24292E;--shiki-dark:#E1E4E8">: </span><span style="color:#005CC5;--shiki-dark:#79B8FF">2026-10-26</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">category</span><span style="color:#24292E;--shiki-dark:#E1E4E8">: </span><span style="color:#032F62;--shiki-dark:#9ECBFF">tech</span></span>
+<span class="line"><span style="color:#22863A;--shiki-dark:#85E89D">tags</span><span style="color:#24292E;--shiki-dark:#E1E4E8">: [</span><span style="color:#032F62;--shiki-dark:#9ECBFF">标签一</span><span style="color:#24292E;--shiki-dark:#E1E4E8">, </span><span style="color:#032F62;--shiki-dark:#9ECBFF">标签二</span><span style="color:#24292E;--shiki-dark:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#6F42C1;--shiki-dark:#B392F0">---</span></span></code></pre>
+<p><code>category</code> 只有两个值：<code>tech</code> 或者 <code>essay</code>。它决定这篇文章出现在哪个栏目。</p>
+<h2 id="一点提醒">一点提醒</h2>
+<p>静态博客最大的敌人不是技术，是<strong>写</strong>。工具链搭得再漂亮，如果三个月没有新文章，那它只是个更复杂的空页面。</p>
+<p>所以我把搭建时间压缩在一晚之内：够用就行，把剩下的时间留给写。</p>
+</div><aside class="toc" aria-label="本文目录"><p class="toc__title">目录</p><ul><li><a class="depth-2" href="#为什么是静态站">为什么是静态站</a></li><li><a class="depth-2" href="#技术选型">技术选型</a></li><li><a class="depth-2" href="#三个关键配置">三个关键配置</a></li><li><a class="depth-3" href="#1-site-和-base">1. site 和 base</a></li><li><a class="depth-3" href="#2-站内链接统一走一个函数">2. 站内链接统一走一个函数</a></li><li><a class="depth-3" href="#3-内容集合而非手写-frontmatter">3. 内容集合而非手写 frontmatter</a></li><li><a class="depth-2" href="#自动部署">自动部署</a></li><li><a class="depth-2" href="#写文章的姿势">写文章的姿势</a></li><li><a class="depth-2" href="#一点提醒">一点提醒</a></li></ul></aside></div><nav class="post-nav" aria-label="文章导航"><a class="post-nav__item" href="/blog/posts/note-system/"><div class="post-nav__label">← 上一篇</div><div class="post-nav__title">我的笔记系统：三层结构</div></a></nav></div></article></main><footer class="site-footer"><div class="wrap"><div class="site-footer__inner"><div><div class="site-footer__brand"><span class="brand__mark" aria-hidden="true"></span>拾穗</div><p class="site-footer__note">© 2026 Harry · 用 Astro 构建，托管在 GitHub Pages。</p></div><div class="site-footer__col"><b>栏目</b><a href="/blog/tech/">技术笔记</a><a href="/blog/essay/">随笔</a></div><div class="site-footer__col"><b>索引</b><a href="/blog/tags/">标签</a><a href="/blog/archive/">归档</a><a href="/blog/about/">关于</a></div><div class="site-footer__col"><b>订阅</b><a href="https://github.com/WanderingAce627" target="_blank" rel="noopener noreferrer">GitHub</a><a href="/blog/rss.xml" rel="noopener noreferrer">RSS</a></div></div><div class="site-footer__mark" aria-hidden="true">拾穗</div></div></footer></body></html>
