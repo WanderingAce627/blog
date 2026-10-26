@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../consts';
+import { url } from '../lib/url';
+---
+
+<BaseLayout title="关于" description={`关于 ${SITE.title} 和这个博客的主人。`}>
+  <header class="wrap page-head">
+    <p class="eyebrow" style="margin-bottom: 0.8rem;">关于</p>
+    <h1 class="page-head__title rise">关于这个博客</h1>
+  </header>
+
+  <div class="wrap">
+    <div class="prose" style="padding-top: 2.5rem;">
+      <p>
+        我是 {SITE.author}。这里是我在互联网上的一块自留地，用来放两类东西：一类是
+        <strong>技术笔记</strong>——踩过的坑、跑通的方案、值得写下来下次不用再查的细节；
+        另一类是<strong>随笔</strong>——读过的东西、走过的路，以及一些还没想清楚的想法。
+      </p>
+
+      <p>
+        把这两类放在一起，不是偷懒。写代码和写字看起来是两件事，但它们用的是同一种能力：
+        把一团模糊的东西整理成别人（以及三个月后的自己）能看懂的样子。
+      </p>
+
+      <h2>为什么自己搭</h2>
+
+      <p>
+        把文章放在别人的平台上当然更省事，但代价是：排版不由你、导出不由你、
+        哪天平台关停也不由你。这个站点的全部内容就是一堆 Markdown 文件，
+        存在我自己的 Git 仓库里——哪怕明天换掉整个前端，文章也一个字不会丢。
+      </p>
+
+      <blockquote>
+        <p>文字应该比承载它的工具活得久。</p>
+      </blockquote>
+
+      <h2>这个站是怎么搭的</h2>
+
+      <ul>
+        <li><strong>框架</strong>：Astro，纯静态输出，没有多余的 JavaScript。</li>
+        <li><strong>写作</strong>：Markdown，放进仓库即自动发布。</li>
+        <li><strong>部署</strong>：GitHub Actions 构建后推到 GitHub Pages，零服务器成本。</li>
+        <li><strong>字体</strong>：全部使用系统字体，不加载任何外部资源。</li>
+      </ul>
+
+      <p>
+        想自己也搭一个？可以看这篇：
+        <a href={url('/posts/astro-github-pages/')}>用 Astro 和 GitHub Pages 搭一个不用管服务器的博客</a>。
+      </p>
+
+      <h2>联系我</h2>
+
+      <p>
+        文章下的评论区我暂时没接，如果你想说点什么，GitHub 上提 issue 或者直接找到我都行。
+        邮件是最靠谱的方式。
+      </p>
+
+      <hr />
+
+      <p style="color: var(--muted); font-size: 0.9em;">
+        本站文章采用署名—非商业性使用 4.0 国际（CC BY-NC 4.0）协议授权，转载请注明出处。
+      </p>
+    </div>
+  </div>
+</BaseLayout>

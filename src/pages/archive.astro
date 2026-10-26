@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { fmt, getPosts, groupByYear } from '../lib/posts';
+import { url } from '../lib/url';
+
+const groups = groupByYear(await getPosts());
+const total = groups.reduce((n, g) => n + g.posts.length, 0);
+---
+
+<BaseLayout title="归档" description="全部文章按年份归档。">
+  <header class="wrap page-head">
+    <h1 class="page-head__title rise">归档</h1>
+    <p class="page-head__desc rise rise-2">共 {total} 篇，{groups.length} 个年份。</p>
+  </header>
+
+  <div class="wrap">
+    {
+      groups.map(({ year, posts }) => (
+        <section class="year-block">
+          <h2 class="year-block__year">{year}</h2>
+          <div class="year-block__list">
+            {posts.map((post) => (
+              <a class="year-block__link" href={url(`/posts/${post.id}/`)}>
+                <time datetime={post.data.pubDate.toISOString()}>
+                  {String(post.data.pubDate.getMonth() + 1).padStart(2, '0')}/
+                  {String(post.data.pubDate.getDate()).padStart(2, '0')}
+                </time>
+                <span>{post.data.title}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))
+    }
+    {groups.length === 0 && <p class="empty">还没有文章。</p>}
+  </div>
+</BaseLayout>

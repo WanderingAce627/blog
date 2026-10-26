@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPosts, tagCounts } from '../../lib/posts';
+import { url } from '../../lib/url';
+
+const tags = tagCounts(await getPosts());
+---
+
+<BaseLayout title="标签" description="按主题浏览全部文章。">
+  <header class="wrap page-head">
+    <h1 class="page-head__title rise">标签</h1>
+    <p class="page-head__desc rise rise-2">共 {tags.length} 个主题。数字是文章数。</p>
+  </header>
+
+  <div class="wrap">
+    {
+      tags.length === 0 ? (
+        <p class="empty">还没有任何标签。</p>
+      ) : (
+        <div class="tag-cloud">
+          {tags.map(({ tag, count }) => (
+            <a class="tag-cloud__item" href={url(`/tags/${encodeURIComponent(tag)}`)}>
+              {tag}
+              <span class="tag-cloud__count">{count}</span>
+            </a>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>

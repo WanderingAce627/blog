@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE, CATEGORIES } from '../consts';
+import { byCategory, fmt, getPosts, tagCounts } from '../lib/posts';
+import { url } from '../lib/url';
+
+const posts = await getPosts();
+const tech = byCategory(posts, 'tech').slice(0, 4);
+const essay = byCategory(posts, 'essay').slice(0, 4);
+const tags = tagCounts(posts).slice(0, 12);
+const years = posts.length ? [...new Set(posts.map((p) => p.data.pubDate.getFullYear()))] : [];
+
+const sections = [
+  { key: 'tech' as const, posts: tech },
+  { key: 'essay' as const, posts: essay },
+];
+---
+
+<BaseLayout>
+  <section class="wrap hero">
+    <p class="eyebrow hero__eyebrow rise">{SITE.titleEn} · 双重笔记</p>
+    <h1 class="hero__title rise rise-2">{SITE.title}</h1>
+    <p class="hero__lede rise rise-3">{SITE.description}</p>
+    <div class="hero__meta rise rise-4">
+      <span>文章 <b>{posts.length}</b> 篇</span>
+      <span>标签 <b>{tags.length}</b> 个</span>
+      {years.length > 0 && <span>始于 <b>{Math.min(...years)}</b></span>}
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="columns">
+      {
+        sections.map(({ key, posts: list }) => (
+          <section class="column">
+            <div class="section-head">
+              <h2 class="section-head__title">{CATEGORIES[key].label}</h2>
+              <a class="section-head__more" href={url(`/${key}`)}>
+                全部 {byCategory(posts, key).length} 篇 →
+              </a>
+            </div>
+            {list.length === 0 && <p class="empty">这里还空着。</p>}
+            {list.map((post) => (
+              <a class="post-item" href={url(`/posts/${post.id}/`)}>
+                <time class="post-item__date" datetime={post.data.pubDate.toISOString()}>
+                  {fmt(post.data.pubDate)}
+                </time>
+                <h3 class="post-item__title">{post.data.title}</h3>
+                {post.data.description && <p class="post-item__desc">{post.data.description}</p>}
+              </a>
+            ))}
+          </section>
+        ))
+      }
+    </div>
+  </div>
+
+  {
+    tags.length > 0 && (
+      <div class="wrap" style="margin-top: 3.5rem;">
+        <div class="section-head">
+          <h2 class="section-head__title">常写的主题</h2>
+          <a class="section-head__more" href={url('/tags')}>
+            全部标签 →
+          </a>
+        </div>
+        <div class="tag-cloud">
+          {tags.map(({ tag, count }) => (
+            <a class="tag-cloud__item" href={url(`/tags/${encodeURIComponent(tag)}`)}>
+              {tag}
+              <span class="tag-cloud__count">{count}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    )
+  }
+</BaseLayout>

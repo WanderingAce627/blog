@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostList from '../components/PostList.astro';
+import { CATEGORIES } from '../consts';
+import { byCategory, getPosts } from '../lib/posts';
+
+const cat = CATEGORIES.essay;
+const posts = byCategory(await getPosts(), 'essay');
+---
+
+<BaseLayout title={cat.label} description={cat.desc}>
+  <header class="wrap page-head">
+    <h1 class="page-head__title rise">{cat.label}</h1>
+    <p class="page-head__desc rise rise-2">{cat.desc}</p>
+  </header>
+  <div class="wrap" style="margin-top: 0.5rem;">
+    <PostList posts={posts} emptyText="还没有随笔，先欠着。" />
+  </div>
+</BaseLayout>

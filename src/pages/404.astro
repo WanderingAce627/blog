@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { url } from '../lib/url';
+---
+
+<BaseLayout title="页面不存在" description="这个地址没有内容。">
+  <div class="wrap center-page">
+    <p class="center-page__code">404</p>
+    <h1 class="center-page__title">这一页走丢了</h1>
+    <p class="center-page__text">地址可能改了，或者从来没存在过。</p>
+    <a class="center-page__link" href={url('/')}>回到首页</a>
+  </div>
+</BaseLayout>

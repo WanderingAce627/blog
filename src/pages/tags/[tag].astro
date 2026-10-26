@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostList from '../../components/PostList.astro';
+import { getPosts, tagCounts } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return tagCounts(posts).map(({ tag, count }) => ({
+    params: { tag },
+    props: { tag, count, posts: posts.filter((p) => p.data.tags.includes(tag)) },
+  }));
+}
+
+const { tag, count, posts } = Astro.props;
+---
+
+<BaseLayout title={`#${tag}`} description={`标签「${tag}」下的 ${count} 篇文章。`}>
+  <header class="wrap page-head">
+    <p class="eyebrow" style="margin-bottom: 0.8rem;">标签</p>
+    <h1 class="page-head__title rise">#{tag}</h1>
+    <p class="page-head__desc rise rise-2">共 {count} 篇</p>
+  </header>
+  <div class="wrap">
+    <PostList posts={posts} />
+  </div>
+</BaseLayout>

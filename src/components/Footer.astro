@@ -1,0 +1,23 @@
+---
+import { SITE } from '../consts';
+import { url } from '../lib/url';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <p>
+      © {SITE.since === year ? year : `${SITE.since}–${year}`} {SITE.author} · {SITE.footerNote}
+    </p>
+    <div class="site-footer__links">
+      {
+        SITE.socials.map((s) => (
+          <a href={s.href.startsWith('/') ? url(s.href) : s.href} target={s.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer">
+            {s.label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</footer>

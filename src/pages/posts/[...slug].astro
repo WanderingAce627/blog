@@ -1,0 +1,30 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostLayout from '../../layouts/PostLayout.astro';
+import { getPosts, readingTime } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    // posts 是倒序的：i+1 是更早的一篇，i-1 是更新的一篇
+    props: { post, prev: posts[i + 1], next: posts[i - 1] },
+  }));
+}
+
+const { post, prev, next } = Astro.props;
+const { Content, headings } = await render(post);
+const minutes = readingTime(post.body);
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description || undefined}
+  type="article"
+  publishedTime={post.data.pubDate.toISOString()}
+>
+  <PostLayout post={post} headings={headings} readingMinutes={minutes} prev={prev} next={next}>
+    <Content />
+  </PostLayout>
+</BaseLayout>
