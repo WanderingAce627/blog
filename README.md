@@ -15,17 +15,22 @@
 
 ### 第一次使用：生成一个访问令牌
 
-只需要做一次。
+只需要做一次。打开后台后，输入框会直接展开，页面顶部也有「创建令牌」的快捷入口。
 
 1. 打开 <https://github.com/settings/personal-access-tokens/new> 新建 **Fine-grained token**
-2. Token name 随便填（比如 `blog-cms`），Expiration 选 90 天或自定义
+2. Token name 随便填（比如 `blog-cms`），Expiration 选 90 天或更久（也可以选不设过期）
 3. **Repository access** 选 `Only select repositories` → 勾选 `blog`
 4. **Permissions → Repository permissions → Contents** 改成 `Read and write`
    （Metadata 会自动变成 Read-only，是正常的）
-5. 点 Generate token，复制出来的那串字符（只显示一次）
-6. 回到后台页面，点 **Sign In Using Access Token**，把令牌粘进去
+5. 点 Generate token，复制出来的那串字符（**只显示一次**）
+6. 回到后台，粘进输入框，点「登录」
 
-令牌存在你自己浏览器的 localStorage 里，不会上传到任何地方。过期后重新生成一个粘进去就行。
+令牌存在你自己浏览器的 localStorage 里，不会上传到任何地方。过期后重新生成一个粘进去就行，改权限不需要重新生成。
+
+> 后台页面上原本还有一个「使用 GitHub 登录」按钮，已通过 `public/admin/index.html` 里的脚本隐藏。
+> 原因是这个功能需要 OAuth 代理（GitHub 不支持纯前端 PKCE），没配的话点了会一直卡在「登录中……」。
+> 如果哪天真的接上了 OAuth 服务，删掉那段脚本里隐藏按钮的两行即可。
+
 
 ### 写文章和插图
 
@@ -99,6 +104,8 @@ npm run preview  # 预览构建结果
 │   └── styles/global.css      # 设计令牌与全部样式
 ├── public/
 │   ├── admin/                 # 写作后台（index.html + config.yml + CMS 本体）
+│   │   ├── locales/           # 中英文语言包（本地托管，不走 CDN）
+│   │   └── fonts/             # Source Sans 3 / Noto Mono / 图标字体（本地托管）
 │   └── uploads/               # 后台上传的图片和附件
 ├── astro.config.mjs           # site / base / markdown 配置
 └── .github/workflows/deploy.yml
@@ -111,6 +118,15 @@ npm run preview  # 预览构建结果
 **改配色** → `src/styles/global.css` 顶部的 CSS 变量，浅色和深色各一组。
 
 **改后台字段** → `public/admin/config.yml`。加了新字段记得同步改 `src/content.config.ts` 里的校验规则，否则构建会报错。
+
+**升级 Sveltia CMS** → 注意这个项目对 CMS 本体做过本地化改造，直接覆盖 `public/admin/sveltia-cms.js` 会丢。重新做一遍只需三步：
+
+1. 从 `node_modules/@sveltia/cms/dist/` 复制 `sveltia-cms.js` 和 `chunks/`
+2. 把文件里的 `https://unpkg.com/@sveltia/cms@${版本}/locales` 改成 `./locales`
+3. 把三个 `https://cdn.jsdelivr.net/fontsource/fonts/*.woff2` 改成 `./fonts/*.woff2`
+
+改完的效果是后台完全不依赖外部 CDN，国内网络下也能秒开。语言包只放了 `zh-CN` 和 `en-US`，其他语言会自动回落到英文。
+
 
 **换到根域名**（`用户名.github.io`）→ 仓库改名为 `用户名.github.io`，把 `astro.config.mjs` 里的 `base: '/blog'` 删掉，把 `public/admin/config.yml` 里的 `public_folder` 改成 `/uploads`，再批量替换已有文章里的图片路径：
 

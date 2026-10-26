@@ -7,22 +7,154 @@
     <title>写作后台 · 拾穗</title>
     <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #ffffff;
+        --fg: rgba(0, 0, 0, 0.86);
+        --fg-dim: rgba(0, 0, 0, 0.52);
+        --line: rgba(0, 0, 0, 0.12);
+        --accent: #c4381f;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #000000;
+          --fg: rgba(255, 255, 255, 0.92);
+          --fg-dim: rgba(255, 255, 255, 0.56);
+          --line: rgba(255, 255, 255, 0.12);
+          --accent: #e2603f;
+        }
+      }
       html,
       body {
         margin: 0;
         padding: 0;
-        background: #fbf9f5;
+        background: var(--bg);
       }
-      @media (prefers-color-scheme: dark) {
-        html,
-        body {
-          background: #131211;
+      #admin-hint {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 2147483647;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.35rem 0.9rem;
+        padding: 0.65rem 1rem;
+        background: var(--bg);
+        border-bottom: 1px solid var(--line);
+        font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 1.6;
+        letter-spacing: 0;
+        color: var(--fg-dim);
+      }
+      #admin-hint[hidden] {
+        display: none;
+      }
+      #admin-hint a {
+        color: var(--fg);
+        text-decoration: none;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 1px;
+        transition: border-color 0.15s, color 0.15s;
+      }
+      #admin-hint a:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      #admin-hint .sep {
+        color: var(--line);
+      }
+      @media (max-width: 600px) {
+        #admin-hint {
+          font-size: 12px;
+          padding: 0.55rem 0.75rem;
         }
       }
     </style>
   </head>
   <body>
+    <div id="admin-hint">
+      <span>第一次使用？先创建一个访问令牌（只需 Contents 读写权限）</span>
+      <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer"
+        >创建令牌</a
+      >
+      <span class="sep">·</span>
+      <a href="https://github.com/WanderingAce627/blog" target="_blank" rel="noopener noreferrer">打开仓库</a>
+    </div>
+
     <!-- Sveltia CMS：纯前端运行，直接通过 GitHub API 读写仓库，不需要任何服务器 -->
     <script src="./sveltia-cms.js"></script>
+
+    <script>
+      /*
+       * 登录页微调。三件事：
+       * 1. 隐藏「使用 GitHub 登录」——本项目没配 OAuth 代理（GitHub 不支持纯前端 PKCE），
+       *    点它只会一直卡在「登录中……」，留着纯粹是绊脚石。
+       * 2. 自动展开令牌输入框，少一次点击。
+       * 3. 顶部引导条在登录后（URL 带 hash 路由 / 出现后台导航）自动隐藏。
+       */
+      (() => {
+        window.__cmsLoginPatch = 'boot';
+        const strip = (s) => (s || '').replace(/[\u2066-\u2069\u200e\u200f]/g, '').trim();
+        const OAUTH_LABEL = '使用 GitHub 登录';
+        const TOKEN_LABEL = '使用访问令牌登录';
+        const hint = document.getElementById('admin-hint');
+        if (!hint) {
+          window.__cmsLoginPatch = 'no-hint-node';
+          return;
+        }
+        let autoOpened = false;
+        let queued = false;
+
+        const findButtons = () => {
+          const out = { oauth: null, token: null };
+          for (const b of document.querySelectorAll('button')) {
+            const t = strip(b.textContent);
+            if (t === OAUTH_LABEL) out.oauth = b;
+            else if (t === TOKEN_LABEL) out.token = b;
+          }
+          return out;
+        };
+
+        const sync = () => {
+          const { oauth, token } = findButtons();
+          if (oauth) oauth.style.setProperty('display', 'none', 'important');
+          if (token && !autoOpened) {
+            autoOpened = true;
+            setTimeout(() => {
+              try {
+                token.click();
+              } catch (_) {}
+            }, 0);
+          }
+          const signedIn = !!location.hash || !!document.querySelector('nav a[href*="collections"]');
+          hint.hidden = signedIn;
+          window.__cmsLoginPatch = signedIn ? 'signed-in' : token ? 'login-ready' : 'waiting';
+        };
+
+        const schedule = () => {
+          if (queued) return;
+          queued = true;
+          requestAnimationFrame(() => {
+            queued = false;
+            sync();
+          });
+        };
+
+        sync();
+        new MutationObserver(schedule).observe(document.documentElement, {
+          childList: true,
+          subtree: true,
+        });
+        window.addEventListener('hashchange', sync);
+        setTimeout(schedule, 300);
+        setTimeout(schedule, 1200);
+        setTimeout(schedule, 2500);
+      })();
+    </script>
   </body>
 </html>

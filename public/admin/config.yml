@@ -13,9 +13,10 @@ public_folder: /blog/uploads
 
 site_url: https://wanderingace627.github.io/blog/
 display_url: https://wanderingace627.github.io/blog/
-logo_url: https://wanderingace627.github.io/blog/favicon.svg
+logo:
+  src: https://wanderingace627.github.io/blog/favicon.svg
 
-locale: zh-CN
+# 后台界面语言跟随浏览器，Sveltia 没有可配置的 locale 选项（写了会被忽略并报警告）
 
 collections:
   - name: posts
