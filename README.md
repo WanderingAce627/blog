@@ -2,7 +2,7 @@
 
 基于 [Astro](https://astro.build) 的静态博客，部署在 GitHub Pages。写文章只需要新建一个 Markdown 文件。
 
-线上地址：<https://wdoudou627-collab.github.io/blog/>
+线上地址：<https://wanderingace627.github.io/blog/>
 
 ---
 
@@ -34,7 +34,7 @@ tags: [标签一, 标签二]
 | `draft` | 否 | `true` 时只在本地可见，不会发布 |
 | `updatedDate` | 否 | 修订日期，填了会在文章页显示「修订于」 |
 
-写完提交推送，1~2 分钟后网站自动更新。**不需要在本地跑任何命令** —— 可以直接在 GitHub 网页上新建文件、写完提交。
+写完提交推送。想完全在 GitHub 网页上写作、不碰本地环境，先按文末「方式二」开启 Actions 自动部署；否则在本地跑一次 `npm run deploy` 发布。
 
 ## 本地预览
 
@@ -83,9 +83,33 @@ npm run preview  # 预览构建结果
 
 ## 部署
 
-`main` 分支每次推送都会触发 `.github/workflows/deploy.yml`：
-安装依赖 → 构建 → 上传产物 → 发布到 GitHub Pages。
+本站当前使用 **gh-pages 分支发布**：GitHub Pages 的 Source 设为 `gh-pages` 分支根目录。
 
-首次部署需要在仓库的 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**（本项目已通过 API 配置好）。
+### 方式一：本地一条命令发布（现在可用）
 
-在 **Actions** 标签页可以看到每次构建的日志；构建失败时网站会保留上一个成功版本，不会挂掉。
+```bash
+npm run deploy
+```
+
+它会自动构建，把 `dist/` 推到 `gh-pages` 分支，约 1 分钟后线上更新。
+
+### 方式二：推送即发布（推荐，需一次性开启）
+
+仓库里已经准备好了 `.github/workflows/deploy.yml`，但因为 GitHub 的 OAuth token 默认没有 `workflow` 权限，它暂时还没能提交上去。开启方式二选一：
+
+**A. 命令行授权后推送**
+
+```bash
+gh auth refresh -h github.com -s workflow
+git add .github && git commit -m "ci: 开启 Actions 自动部署" && git push
+```
+
+**B. 网页上手动添加**
+
+打开 <https://github.com/WanderingAce627/blog/new/main/.github/workflows>，文件名填 `deploy.yml`，把本地 `.github/workflows/deploy.yml` 的内容粘进去提交。
+
+然后到仓库 **Settings → Pages → Build and deployment → Source** 改成 **GitHub Actions**。
+
+之后每次 `git push` 到 `main` 都会自动构建发布 —— 连本地环境都不需要，直接在 GitHub 网页上新建 `.md` 文件提交就行。
+
+> 两种方式不要同时开：切到 GitHub Actions 后，`gh-pages` 分支的内容就不再影响线上了。
